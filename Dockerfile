@@ -8,22 +8,24 @@ FROM node:18-slim
 RUN apt-get update && apt-get install -y --no-install-recommends ffmpeg && \
     rm -rf /var/lib/apt/lists/*
 
-# Establecer un directorio base de trabajo
-WORKDIR /usr/src
-
-# Copiar DESDE la subcarpeta 'audio-viz-app' del contexto (raíz)
-# HACIA el WORKDIR actual (.) en el contenedor
-COPY audio-viz-app/package*.json ./
-COPY audio-viz-app/. .
-
-# Cambiar el directorio de trabajo A DENTRO de la carpeta de la aplicación
+# Establecer el directorio de trabajo FINAL DENTRO del contenedor
 WORKDIR /usr/src/app
 
-# Ahora package.json está garantizado en el WORKDIR actual (.)
+# Copiar PRIMERO los archivos package.json y package-lock.json
+COPY audio-viz-app/package*.json ./
+
+# ------ PASO DE DEPURACIÓN ------
+# Listar el contenido del directorio de trabajo para verificar si package.json está aquí
+RUN echo "--- Listing files in /usr/src/app before npm install ---" && ls -la
+# ---------------------------------
+
 # Instalar las dependencias de la aplicación
 RUN npm install
 # Si tuvieras dependencias de desarrollo que NO necesitas en producción:
 # RUN npm ci --omit=dev
+
+# Copiar TODO el contenido restante de la carpeta local 'audio-viz-app'
+COPY audio-viz-app/. .
 
 # Crear directorios si la aplicación los necesita explícitamente
 # (Asegúrate de que las rutas en tu server.js coincidan si descomentas esto)
