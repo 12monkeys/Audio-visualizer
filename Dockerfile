@@ -1,25 +1,23 @@
-# Usar la imagen oficial de Sharp que ya incluye todas las dependencias necesarias
-FROM node:16-alpine
+# Usar Node.js 16 con Debian (más estable)
+FROM node:16-buster
 
 # Instalar FFmpeg
-RUN apk add --no-cache ffmpeg
-
-# Configurar variables de entorno para sharp
-ENV SHARP_IGNORE_GLOBAL_LIBVIPS=1
-ENV npm_config_arch=x64
-ENV npm_config_platform=linux
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ffmpeg \
+    && rm -rf /var/lib/apt/lists/*
 
 # Establecer el directorio de trabajo
 WORKDIR /usr/src/app
 
-# Copiar package.json y package-lock.json
+# Copiar package.json
 COPY audio-viz-app/package*.json ./
 
-# Eliminar node_modules si existe (por seguridad)
-RUN rm -rf node_modules
+# Eliminar canvas y agregar sharp mediante un script
+RUN sed -i '/"canvas"/d' ./package.json && \
+    npm install sharp@0.32.1 --save
 
-# Instalar dependencias con flag específico para problemas de plataforma
-RUN npm install --verbose --unsafe-perm
+# Instalar dependencias
+RUN npm install
 
 # Copiar el resto de la aplicación
 COPY audio-viz-app/. .
