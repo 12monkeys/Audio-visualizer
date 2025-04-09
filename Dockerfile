@@ -11,9 +11,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends ffmpeg && \
 # Establecer un directorio base de trabajo
 WORKDIR /usr/src
 
-# Copiar la carpeta completa de la aplicación desde el contexto local
-# a una subcarpeta 'app' dentro del contenedor (/usr/src/app)
-COPY audio-viz-app/. ./app/
+# Copiar DESDE la subcarpeta 'audio-viz-app' del contexto (raíz)
+# HACIA el WORKDIR actual (.) en el contenedor
+COPY audio-viz-app/package*.json ./
+COPY audio-viz-app/. .
 
 # Cambiar el directorio de trabajo A DENTRO de la carpeta de la aplicación
 WORKDIR /usr/src/app
