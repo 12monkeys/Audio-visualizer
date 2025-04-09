@@ -1,0 +1,33 @@
+services:
+  - type: web # Tipo de servicio: una aplicación web
+    name: audio-visualizer-app # Nombre del servicio en Render
+    env: docker # Entorno: usar nuestro Dockerfile
+    # Asegúrate de elegir una región cercana a ti o tus usuarios
+    region: frankfurt # Ejemplo: Frankfurt (otras opciones: oregon, ohio, singapore)
+    # Plan: 'free' o 'starter', etc. Empezamos con free.
+    plan: free
+    # Configuración de Docker
+    dockerfilePath: ./Dockerfile # Ruta al Dockerfile relativo a la raíz del repo
+    # Puerto interno en el que escucha tu aplicación Node.js
+    envVars:
+      - key: PORT # Render define automáticamente esta variable
+        value: 3000 # Tu app escucha en el 3000
+      # Puedes añadir otras variables de entorno aquí si las necesitas
+      # - key: GOOGLE_DRIVE_API_KEY
+      #   sync: false # Para secretos que configuras en el dashboard de Render
+    # Auto-deploy: Desplegar automáticamente cuando se haga push a la rama 'main'
+    autoDeploy: true
+    branch: main # O la rama que uses por defecto
+
+    # ---- IMPORTANTE: Almacenamiento y Limitaciones del Plan Gratuito ----
+    # El plan gratuito ('free') de Render NO incluye discos persistentes.
+    # Los archivos escritos en el contenedor (uploads/, outputs/) se PERDERÁN
+    # cuando el servicio se reinicie o se redespliegue.
+    # Para que la app funcione de forma fiable (guardando frames y videos),
+    # NECESITARÁS un plan de pago y configurar un Disco Persistente aquí.
+    # Ejemplo de cómo sería con un plan de pago:
+    # disks:
+    #   - name: app-data # Nombre del disco
+    #     mountPath: /usr/src/app/data # Dónde montar el disco dentro del contenedor
+    #     sizeGB: 1 # Tamaño del disco (costo asociado)
+    # Tendrías que ajustar tu código para usar /usr/src/app/data/uploads y /usr/src/app/data/outputs

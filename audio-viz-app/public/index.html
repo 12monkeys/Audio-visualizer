@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Videos con Visualización de Audio</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Añadir Quill.js v2.0.3 -->
+    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <h1>Generador de Videos con Visualización de Audio</h1>
+            <p>Crea videos con visualización de ondas de sonido a partir de tus archivos MP3</p>
+        </header>
+
+        <div class="main-content">
+            <!-- Barra lateral con opciones -->
+            <aside class="sidebar">
+                <form id="upload-form">
+                    <div class="file-inputs">
+                        <div class="file-group">
+                            <label for="audio-file">Archivo de Audio (MP3)</label>
+                            <div class="drop-area" id="audio-drop-area">
+                                <div class="icon">🎵</div>
+                                <p>Arrastra y suelta tu archivo de audio aquí</p>
+                                <p class="drop-file-hint">o haz clic para seleccionar</p>
+                                <input type="file" id="audio-file" accept=".mp3" required style="display: none;">
+                                <button type="button" class="change-file" id="change-audio" style="display: none;">Cambiar archivo</button>
+                                <p id="audio-filename" style="display: none;"></p>
+                            </div>
+                        </div>
+                        
+                        <div class="file-group">
+                            <label for="template-file">Imagen de Template (JPG/PNG)</label>
+                            <div class="drop-area" id="template-drop-area">
+                                <div class="icon">🖼️</div>
+                                <p>Arrastra y suelta tu imagen de template aquí</p>
+                                <p class="drop-file-hint">o haz clic para seleccionar</p>
+                                <input type="file" id="template-file" accept=".jpg,.jpeg,.png" required style="display: none;">
+                                <button type="button" class="change-file" id="change-template" style="display: none;">Cambiar imagen</button>
+                                <img id="template-preview" class="preview-image">
+                                <p id="template-filename" style="display: none;"></p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="options-section">
+                        <h3>Opciones de visualización</h3>
+                        
+                        <div class="option-group">
+                            <label for="wave-color">Color de la onda:</label>
+                            <input type="color" id="wave-color" value="#FF0046">
+                        </div>
+                        
+                        <div class="option-group">
+                            <label for="wave-x">Posición X:</label>
+                            <input type="number" id="wave-x" value="438" min="0">
+                        </div>
+                        
+                        <div class="option-group">
+                            <label for="wave-y">Posición Y:</label>
+                            <input type="number" id="wave-y" value="301" min="0">
+                        </div>
+                        
+                        <div class="option-group">
+                            <label for="wave-width">Ancho:</label>
+                            <input type="number" id="wave-width" value="354" min="50">
+                        </div>
+                        
+                        <div class="option-group">
+                            <label for="wave-height">Alto:</label>
+                            <input type="number" id="wave-height" value="60" min="10">
+                        </div>
+                    </div>
+                    
+                    <div class="text-options-section">
+                        <h3>Personalización de texto</h3>
+                        
+                        <!-- Hashtag -->
+                        <div class="text-group">
+                            <h4>Hashtag</h4>
+                            <div class="editor-container">
+                                <label>Contenido del hashtag:</label>
+                                <div id="hashtag-editor"></div>
+                            </div>
+                            <div class="option-group">
+                                <label for="hashtag-x">Posición X:</label>
+                                <input type="number" id="hashtag-x" value="108" min="0">
+                            </div>
+                            <div class="option-group">
+                                <label for="hashtag-y">Posición Y:</label>
+                                <input type="number" id="hashtag-y" value="128" min="0">
+                            </div>
+                        </div>
+                        
+                        <!-- Título del Podcast -->
+                        <div class="text-group">
+                            <h4>Título del Podcast</h4>
+                            <div class="editor-container">
+                                <label>Contenido del título:</label>
+                                <div id="podcast-editor"></div>
+                            </div>
+                            <div class="option-group">
+                                <label for="podcast-x">Posición X:</label>
+                                <input type="number" id="podcast-x" value="30" min="0">
+                            </div>
+                            <div class="option-group">
+                                <label for="podcast-y">Posición Y:</label>
+                                <input type="number" id="podcast-y" value="195" min="0">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" id="process-button">Generar Video</button>
+                </form>
+            </aside>
+
+            <!-- Área principal con vista previa -->
+            <main class="preview-area">
+                <div class="preview-section">
+                    <h3>Vista previa y posicionamiento</h3>
+                    <div class="preview-container">
+                        <canvas id="preview-canvas"></canvas>
+                        <div id="hashtag-preview" class="draggable-element">
+                            <div class="drag-handle">+</div>
+                            <div class="preview-content"></div>
+                        </div>
+                        <div id="podcast-preview" class="draggable-element">
+                            <div class="drag-handle">+</div>
+                            <div class="preview-content"></div>
+                        </div>
+                        <div id="wave-preview" class="draggable-element">
+                            <div class="drag-handle">+</div>
+                            <div class="wave-placeholder"></div>
+                        </div>
+                    </div>
+                    <div class="preview-info">
+                        <p>Arrastra los elementos para ajustar sus posiciones</p>
+                    </div>
+                </div>
+
+                <div class="status-section" style="display: none;">
+                    <h3>Estado del procesamiento</h3>
+                    <div class="progress-container">
+                        <div class="progress-bar" id="progress-bar"></div>
+                    </div>
+                    <p id="status-message">Procesando...</p>
+                    <div id="progress-details">
+                        <div class="progress-step" id="step-audio">
+                            <span class="step-name">Analizando audio</span>
+                            <span class="step-status">Pendiente</span>
+                        </div>
+                        <div class="progress-step" id="step-frames">
+                            <span class="step-name">Generando frames</span>
+                            <span class="step-status">Pendiente</span>
+                        </div>
+                        <div class="progress-step" id="step-video">
+                            <span class="step-name">Creando video</span>
+                            <span class="step-status">Pendiente</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="result-section" style="display: none;">
+                    <h3>¡Tu video está listo!</h3>
+                    <div class="video-preview">
+                        <video id="result-video" controls></video>
+                    </div>
+                    <a id="download-link" class="download-button" target="_blank">Descargar Video</a>
+                    <button id="new-video-button" class="new-button">Crear otro video</button>
+                </div>
+            </main>
+        </div>
+    </div>
+    
+    <footer>
+        <p>Generador de Videos con Visualización de Audio © 2025 Carlos Guerrero Díaz</p>
+    </footer>
+    
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,516 @@
+/* Main styles for Audio Visualizer */
+:root {
+  --primary-color: #3498db;
+  --secondary-color: #2ecc71;
+  --background-color: #1e1e2f;
+  --text-color: #f5f5f5;
+  --panel-bg: rgba(30, 30, 47, 0.9);
+  --border-radius: 8px;
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+
+.app-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 16px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 24px;
+}
+
+.app-title {
+  font-size: 1.8rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.app-title svg {
+  width: 32px;
+  height: 32px;
+}
+
+.header-controls {
+  display: flex;
+  gap: 12px;
+}
+
+.main-content {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 24px;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    grid-template-columns: 1fr;
+  }
+  
+  .settings-panel {
+    display: none;
+  }
+  
+  .settings-panel-visible {
+    display: block !important;
+  }
+}
+
+/* Preview container and drop zone */
+.preview-container {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: var(--border-radius);
+  width: 100%;
+  min-height: 400px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.drop-zone {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.6);
+  border: 2px dashed rgba(255, 255, 255, 0.3);
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 5;
+}
+
+.drop-zone.drop-zone-active {
+  background-color: rgba(52, 152, 219, 0.2);
+  border-color: var(--primary-color);
+}
+
+.drop-zone.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.drop-zone-message {
+  font-size: 1.2rem;
+  margin-top: 16px;
+  text-align: center;
+}
+
+.drop-zone svg {
+  width: 64px;
+  height: 64px;
+  opacity: 0.7;
+}
+
+.upload-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* Settings panel */
+.settings-panel {
+  background-color: var(--panel-bg);
+  border-radius: var(--border-radius);
+  padding: 24px;
+  box-shadow: var(--shadow);
+}
+
+.settings-section {
+  margin-bottom: 24px;
+}
+
+.settings-title {
+  font-size: 1.2rem;
+  margin-bottom: 16px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.settings-title svg {
+  width: 20px;
+  height: 20px;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.select-wrapper {
+  position: relative;
+}
+
+.select-wrapper::after {
+  content: "▼";
+  font-size: 0.7rem;
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+/* Form controls */
+.text-input,
+.select-input,
+.range-input {
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  color: var(--text-color);
+  padding: 10px 12px;
+  transition: border-color 0.3s ease;
+}
+
+input[type="file"] {
+  display: none;
+}
+
+.text-input:focus,
+.select-input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+.select-input {
+  appearance: none;
+  padding-right: 28px;
+}
+
+.range-input {
+  appearance: none;
+  height: 8px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+  outline: none;
+  padding: 0;
+}
+
+.range-input::-webkit-slider-thumb {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  background-color: var(--primary-color);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.range-input::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  background-color: var(--primary-color);
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+}
+
+.range-display {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin-top: 4px;
+}
+
+.range-value {
+  font-size: 0.85rem;
+  color: var(--primary-color);
+  font-weight: 500;
+}
+
+/* Button styles */
+.button-group {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.button svg {
+  width: 16px;
+  height: 16px;
+}
+
+.button:hover {
+  background-color: #2980b9;
+  transform: translateY(-1px);
+}
+
+.button:active {
+  transform: translateY(0);
+}
+
+.secondary-button {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.secondary-button:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.settings-toggle {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .settings-toggle {
+    display: block;
+    margin-bottom: 16px;
+  }
+}
+
+/* Audio controls */
+.audio-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  margin-top: 16px;
+}
+
+.control-button {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.control-button:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.control-button.playing {
+  background-color: var(--primary-color);
+}
+
+.control-button svg {
+  width: 20px;
+  height: 20px;
+  fill: white;
+}
+
+.time-display {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0 8px;
+}
+
+.progress-bar {
+  flex-grow: 1;
+  height: 8px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.progress-fill {
+  height: 100%;
+  background-color: var(--primary-color);
+  width: 0;
+  transition: width 0.1s linear;
+}
+
+/* Color picker */
+.color-picker {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.color-input {
+  appearance: none;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 4px;
+  background: none;
+  cursor: pointer;
+}
+
+.color-input::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.color-input::-webkit-color-swatch {
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+/* Help overlay */
+.help-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.help-overlay.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.help-content {
+  background-color: var(--panel-bg);
+  border-radius: var(--border-radius);
+  padding: 32px;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow);
+}
+
+.help-content h2 {
+  margin-bottom: 20px;
+  color: var(--primary-color);
+}
+
+.help-content h3 {
+  margin: 16px 0 8px;
+  font-size: 1.1rem;
+}
+
+.help-content p, .help-content li {
+  margin-bottom: 8px;
+  line-height: 1.5;
+}
+
+.help-content ul, .help-content ol {
+  padding-left: 24px;
+  margin-bottom: 16px;
+}
+
+.help-content button {
+  margin-top: 24px;
+}
+
+/* Status messages */
+#status-message {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 12px 24px;
+  border-radius: var(--border-radius);
+  background-color: var(--panel-bg);
+  max-width: 90%;
+  box-shadow: var(--shadow);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 1000;
+}
+
+#status-message.error-message {
+  background-color: rgba(231, 76, 60, 0.9);
+  opacity: 1;
+}
+
+#status-message.success-message {
+  background-color: rgba(46, 204, 113, 0.9);
+  opacity: 1;
+}
+
+/* Tooltip */
+.tooltip {
+  position: fixed;
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  max-width: 200px;
+  z-index: 10;
+  pointer-events: none;
+  transform: translateX(-50%);
+}
+
+.tooltip:after {
+  content: '';
+  position: absolute;
+  top: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 0 5px 5px;
+  border-style: solid;
+  border-color: transparent transparent rgba(0, 0, 0, 0.8) transparent;
+}
+
+/* SVG Visualization Styles */
+svg.visualization {
+  width: 100%;
+  height: 100%;
+  min-height: 400px;
+} 
