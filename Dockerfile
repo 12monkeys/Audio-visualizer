@@ -1,42 +1,34 @@
-# Usar Alpine Linux que es más ligero y a veces más compatible con módulos nativos
-FROM node:18-alpine
+# Usar Node.js 16 con una imagen completa Debian
+FROM node:16-buster
 
-# Instalar dependencias de sistema necesarias para Alpine
-RUN apk add --no-cache \
+# Instalar FFmpeg y dependencias para Sharp
+RUN apt-get update && apt-get install -y --no-install-recommends \
     ffmpeg \
-    build-base \
-    g++ \
-    cairo-dev \
-    jpeg-dev \
-    pango-dev \
-    giflib-dev \
-    pixman-dev \
-    pangomm-dev \
-    libjpeg-turbo-dev \
-    freetype-dev \
-    python3
+    build-essential \
+    libvips-dev \
+    python3 \
+    && rm -rf /var/lib/apt/lists/*
 
 # Establecer el directorio de trabajo
 WORKDIR /usr/src/app
 
-# Copiar los archivos de configuración
+# Copiar package.json y package-lock.json
 COPY audio-viz-app/package*.json ./
 
-# IMPORTANTE: Instalar una versión específica anterior de canvas que es más estable
-RUN npm uninstall canvas || true && \
-    npm install canvas@2.6.1 --build-from-source
+# Instalar sharp explícitamente primero
+RUN npm install sharp --verbose
 
-# Instalar el resto de dependencias
-RUN npm install 
+# Instalar el resto de dependencias 
+RUN npm install
 
 # Copiar el resto de la aplicación
 COPY audio-viz-app/. .
 
-# Crear directorios si son necesarios
+# Crear directorios necesarios
 RUN mkdir -p uploads outputs
 
-# Informar a Docker que la aplicación escuchará en el puerto 3000
+# Puerto en el que escucha la aplicación
 EXPOSE 3000
 
-# Definir el comando para ejecutar la aplicación
+# Comando para iniciar la aplicación
 CMD ["node", "server.js"]
