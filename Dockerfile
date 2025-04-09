@@ -1,7 +1,7 @@
-# Usar una imagen oficial de Node.js (versión 18 LTS es una buena opción)
-FROM node:18-slim
+# Usar una imagen más completa basada en Debian Bullseye
+FROM node:18-bullseye
 
-# Instalar FFmpeg y todas las dependencias necesarias para compilar canvas
+# Instalar FFmpeg y las dependencias necesarias para canvas
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ffmpeg \
     build-essential \
@@ -14,19 +14,23 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     python3 \
     && rm -rf /var/lib/apt/lists/*
 
-# Establecer el directorio de trabajo FINAL DENTRO del contenedor
+# Establecer el directorio de trabajo
 WORKDIR /usr/src/app
 
-# Copiar PRIMERO los archivos package.json y package-lock.json
+# Limpiar node_modules si existe (para evitar conflictos)
+RUN rm -rf node_modules
+
+# Configurar variables de entorno para node-canvas
+ENV PKG_CONFIG_PATH=/usr/lib/x86_64-linux-gnu/pkgconfig
+ENV LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu
+
+# Copiar package.json y package-lock.json
 COPY audio-viz-app/package*.json ./
 
-# Instalar canvas PRIMERO con todas las flags necesarias
-RUN npm install canvas --build-from-source
+# Instalar dependencias de forma limpia
+RUN npm ci
 
-# Instalar el resto de dependencias
-RUN npm install
-
-# Copiar TODO el contenido restante de la carpeta local 'audio-viz-app'
+# Copiar el resto de la aplicación
 COPY audio-viz-app/. .
 
 # Crear directorios si la aplicación los necesita explícitamente
