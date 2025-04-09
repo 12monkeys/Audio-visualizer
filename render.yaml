@@ -7,7 +7,7 @@ services:
     # Plan: 'free' o 'starter', etc. Empezamos con free.
     plan: free
     # Configuración de Docker
-    dockerfilePath: ./Dockerfile # Ruta al Dockerfile relativo a la raíz del repo
+    dockerfilePath: ./audio-viz-app/Dockerfile # Añade la carpeta aquí
     # Puerto interno en el que escucha tu aplicación Node.js
     envVars:
       - key: PORT # Render define automáticamente esta variable
