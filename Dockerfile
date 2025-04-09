@@ -1,13 +1,13 @@
-# Usar Node.js 16 con una imagen completa Debian
-FROM node:16-buster
+# Usar la imagen oficial de Sharp que ya incluye todas las dependencias necesarias
+FROM node:16-alpine
 
-# Instalar FFmpeg y dependencias para Sharp
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    ffmpeg \
-    build-essential \
-    libvips-dev \
-    python3 \
-    && rm -rf /var/lib/apt/lists/*
+# Instalar FFmpeg
+RUN apk add --no-cache ffmpeg
+
+# Configurar variables de entorno para sharp
+ENV SHARP_IGNORE_GLOBAL_LIBVIPS=1
+ENV npm_config_arch=x64
+ENV npm_config_platform=linux
 
 # Establecer el directorio de trabajo
 WORKDIR /usr/src/app
@@ -15,11 +15,11 @@ WORKDIR /usr/src/app
 # Copiar package.json y package-lock.json
 COPY audio-viz-app/package*.json ./
 
-# Instalar sharp explícitamente primero
-RUN npm install sharp --verbose
+# Eliminar node_modules si existe (por seguridad)
+RUN rm -rf node_modules
 
-# Instalar el resto de dependencias 
-RUN npm install
+# Instalar dependencias con flag específico para problemas de plataforma
+RUN npm install --verbose --unsafe-perm
 
 # Copiar el resto de la aplicación
 COPY audio-viz-app/. .
