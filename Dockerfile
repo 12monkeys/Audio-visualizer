@@ -5,7 +5,8 @@ FROM node:18-slim
 # 'apt-get update' actualiza la lista de paquetes
 # 'apt-get install -y --no-install-recommends ffmpeg' instala ffmpeg sin paquetes extra no necesarios
 # 'rm -rf /var/lib/apt/lists/*' limpia la caché de apt para mantener la imagen pequeña
-RUN apt-get update && apt-get install -y --no-install-recommends ffmpeg && \
+RUN apt-get update && apt-get install -y --no-install-recommends ffmpeg \
+    build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev && \
     rm -rf /var/lib/apt/lists/*
 
 # Establecer el directorio de trabajo FINAL DENTRO del contenedor
