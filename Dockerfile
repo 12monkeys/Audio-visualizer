@@ -22,6 +22,8 @@ RUN echo "--- Listing files in /usr/src/app before npm install ---" && ls -la
 
 # Instalar las dependencias de la aplicación
 RUN npm install
+# Forzar la recompilación de canvas para resolver problema de "invalid ELF header"
+RUN npm rebuild canvas --update-binary
 # Si tuvieras dependencias de desarrollo que NO necesitas en producción: 
 # RUN npm ci --omit=dev
 
