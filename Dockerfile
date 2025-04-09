@@ -22,7 +22,7 @@ RUN echo "--- Listing files in /usr/src/app before npm install ---" && ls -la
 
 # Instalar las dependencias de la aplicación
 RUN npm install
-# Si tuvieras dependencias de desarrollo que NO necesitas en producción:
+# Si tuvieras dependencias de desarrollo que NO necesitas en producción: 
 # RUN npm ci --omit=dev
 
 # Copiar TODO el contenido restante de la carpeta local 'audio-viz-app'
