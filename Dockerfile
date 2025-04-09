@@ -1,46 +1,42 @@
-# Usar una imagen más completa basada en Debian Bullseye
-FROM node:18-bullseye
+# Usar Alpine Linux que es más ligero y a veces más compatible con módulos nativos
+FROM node:18-alpine
 
-# Instalar FFmpeg y las dependencias necesarias para canvas
-RUN apt-get update && apt-get install -y --no-install-recommends \
+# Instalar dependencias de sistema necesarias para Alpine
+RUN apk add --no-cache \
     ffmpeg \
-    build-essential \
-    libcairo2-dev \
-    libpango1.0-dev \
-    libjpeg-dev \
-    libgif-dev \
-    librsvg2-dev \
-    pkg-config \
-    python3 \
-    && rm -rf /var/lib/apt/lists/*
+    build-base \
+    g++ \
+    cairo-dev \
+    jpeg-dev \
+    pango-dev \
+    giflib-dev \
+    pixman-dev \
+    pangomm-dev \
+    libjpeg-turbo-dev \
+    freetype-dev \
+    python3
 
 # Establecer el directorio de trabajo
 WORKDIR /usr/src/app
 
-# Limpiar node_modules si existe (para evitar conflictos)
-RUN rm -rf node_modules
-
-# Configurar variables de entorno para node-canvas
-ENV PKG_CONFIG_PATH=/usr/lib/x86_64-linux-gnu/pkgconfig
-ENV LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu
-
-# Copiar package.json y package-lock.json
+# Copiar los archivos de configuración
 COPY audio-viz-app/package*.json ./
 
-# Instalar dependencias de forma limpia
-RUN npm ci
+# IMPORTANTE: Instalar una versión específica anterior de canvas que es más estable
+RUN npm uninstall canvas || true && \
+    npm install canvas@2.6.1 --build-from-source
+
+# Instalar el resto de dependencias
+RUN npm install 
 
 # Copiar el resto de la aplicación
 COPY audio-viz-app/. .
 
-# Crear directorios si la aplicación los necesita explícitamente
-# (Asegúrate de que las rutas en tu server.js coincidan si descomentas esto)
-# RUN mkdir -p uploads outputs
+# Crear directorios si son necesarios
+RUN mkdir -p uploads outputs
 
 # Informar a Docker que la aplicación escuchará en el puerto 3000
-# Render inyectará la variable PORT, pero es bueno exponerlo igualmente.
 EXPOSE 3000
 
 # Definir el comando para ejecutar la aplicación
-# server.js ahora está en el WORKDIR actual (/usr/src/app)
-CMD [ "node", "server.js" ]
+CMD ["node", "server.js"]
